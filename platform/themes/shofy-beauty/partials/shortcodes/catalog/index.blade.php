@@ -358,7 +358,11 @@
     }
 
     #{{ $sectionId }}.catalog-motion .catalog-showcase__visual {
-        transform: translateY(28px) scale(.975);
+        transform: translateX(-46px) scale(.985);
+    }
+
+    #{{ $sectionId }}.catalog-motion .catalog-showcase__content {
+        transform: translateX(46px) scale(.99);
     }
 
     #{{ $sectionId }}.catalog-motion.catalog-is-visible .catalog-showcase__header,
@@ -393,7 +397,9 @@
         if (!section || !('IntersectionObserver' in window)) return;
         section.classList.add('catalog-motion');
         const observer = new IntersectionObserver(([entry]) => {
-            section.classList.toggle('catalog-is-visible', entry.isIntersecting);
+            if (!entry.isIntersecting) return;
+            section.classList.add('catalog-is-visible');
+            observer.disconnect();
         }, { threshold: 0.12, rootMargin: '-5% 0px -5% 0px' });
         requestAnimationFrame(() => {
             requestAnimationFrame(() => observer.observe(section));
