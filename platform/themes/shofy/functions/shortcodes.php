@@ -2,6 +2,7 @@
 
 use Botble\Base\Forms\FieldOptions\ColorFieldOption;
 use Botble\Base\Forms\FieldOptions\CoreIconFieldOption;
+use Botble\Base\Forms\FieldOptions\EditorFieldOption;
 use Botble\Base\Forms\FieldOptions\MediaImageFieldOption;
 use Botble\Base\Forms\FieldOptions\OnOffFieldOption;
 use Botble\Base\Forms\FieldOptions\RadioFieldOption;
@@ -10,6 +11,7 @@ use Botble\Base\Forms\FieldOptions\TextareaFieldOption;
 use Botble\Base\Forms\FieldOptions\TextFieldOption;
 use Botble\Base\Forms\FieldOptions\UiSelectorFieldOption;
 use Botble\Base\Forms\Fields\ColorField;
+use Botble\Base\Forms\Fields\CkEditorField;
 use Botble\Base\Forms\Fields\CoreIconField;
 use Botble\Base\Forms\Fields\HtmlField;
 use Botble\Base\Forms\Fields\MediaImageField;
@@ -176,6 +178,80 @@ app()->booted(function (): void {
                 MediaImageField::class,
                 MediaImageFieldOption::make()
                     ->label(__('Shape image right'))
+            );
+    });
+
+    Shortcode::register(
+        'responsive-contact',
+        __('Responsive Contact'),
+        __('A responsive image and information section'),
+        function (ShortcodeCompiler $shortcode) {
+            $informationItems = Shortcode::fields()->getTabsData(['name', 'text'], $shortcode);
+
+            return Theme::partial(
+                'shortcodes.responsive-contact.index',
+                compact('shortcode', 'informationItems')
+            );
+        }
+    );
+
+    Shortcode::setAdminConfig('responsive-contact', function (array $attributes) {
+        return ShortcodeForm::createFromArray($attributes)
+            ->withLazyLoading()
+            ->add(
+                'name',
+                TextField::class,
+                TextFieldOption::make()
+                    ->label(__('Name'))
+                    ->placeholder(__('Enter the section name'))
+            )
+            ->add(
+                'description',
+                CkEditorField::class,
+                EditorFieldOption::make()
+                    ->label(__('Text'))
+                    ->placeholder(__('Enter the information displayed below the name'))
+            )
+            ->add(
+                'background_color',
+                ColorField::class,
+                ColorFieldOption::make()
+                    ->label(__('Background color'))
+                    ->defaultValue('#fbf8ed')
+            )
+            ->add(
+                'image_1',
+                MediaImageField::class,
+                MediaImageFieldOption::make()->label(__('Left image'))
+            )
+            ->add(
+                'image_2',
+                MediaImageField::class,
+                MediaImageFieldOption::make()->label(__('Center image'))
+            )
+            ->add(
+                'image_3',
+                MediaImageField::class,
+                MediaImageFieldOption::make()->label(__('Right image'))
+            )
+            ->add(
+                'information_items',
+                ShortcodeTabsField::class,
+                ShortcodeTabsFieldOption::make()
+                    ->label(__('Information'))
+                    ->fields([
+                        'name' => [
+                            'type' => 'text',
+                            'title' => __('Name'),
+                            'required' => true,
+                        ],
+                        'text' => [
+                            'type' => 'textarea',
+                            'title' => __('Text'),
+                            'required' => false,
+                        ],
+                    ])
+                    ->attrs($attributes)
             );
     });
 
