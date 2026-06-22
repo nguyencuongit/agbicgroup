@@ -65,6 +65,7 @@
     .ag-responsive-contact__title {
         margin: 0 0 18px;
         color: #172217;
+        font-family: Georgia, 'Times New Roman', serif;
         font-size: clamp(30px, 3.1vw, 52px);
         font-weight: 700;
         line-height: 1.15;
@@ -199,11 +200,22 @@
 
         .ag-responsive-contact__grid,
         .ag-responsive-contact__information {
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .ag-responsive-contact__grid {
+            gap: 8px;
         }
 
         .ag-responsive-contact__information {
-            grid-column: auto;
+            grid-column: 1 / -1;
+            grid-template-columns: 1fr;
+            gap: 18px;
+            margin-top: 20px;
+        }
+
+        .ag-responsive-contact__image {
+            border-radius: 10px;
         }
 
         .ag-responsive-contact__image--third {

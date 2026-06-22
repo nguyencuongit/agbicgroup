@@ -256,6 +256,132 @@ app()->booted(function (): void {
     });
 
     Shortcode::register(
+        'staircase-content',
+        __('Staircase Content'),
+        __('A six-image diagonal editorial collage'),
+        function (ShortcodeCompiler $shortcode) {
+            $informationItems = Shortcode::fields()->getTabsData(['name', 'text'], $shortcode);
+
+            return Theme::partial(
+                'shortcodes.staircase-content.index',
+                compact('shortcode', 'informationItems')
+            );
+        }
+    );
+
+    Shortcode::setAdminConfig('staircase-content', function (array $attributes) {
+        return ShortcodeForm::createFromArray($attributes)
+            ->withLazyLoading()
+            ->add(
+                'name',
+                TextField::class,
+                TextFieldOption::make()
+                    ->label(__('Name'))
+                    ->placeholder(__('Enter the section name'))
+            )
+            ->add(
+                'description',
+                CkEditorField::class,
+                EditorFieldOption::make()
+                    ->label(__('Text'))
+                    ->placeholder(__('Enter the information displayed below the name'))
+            )
+            ->add(
+                'background_color',
+                ColorField::class,
+                ColorFieldOption::make()
+                    ->label(__('Background color'))
+                    ->defaultValue('#fbf8ed')
+            )
+            ->add('image_1', MediaImageField::class, MediaImageFieldOption::make()->label(__('Image 1')))
+            ->add('image_2', MediaImageField::class, MediaImageFieldOption::make()->label(__('Image 2')))
+            ->add('image_3', MediaImageField::class, MediaImageFieldOption::make()->label(__('Image 3')))
+            ->add('image_4', MediaImageField::class, MediaImageFieldOption::make()->label(__('Image 4')))
+            ->add('image_5', MediaImageField::class, MediaImageFieldOption::make()->label(__('Image 5')))
+            ->add('image_6', MediaImageField::class, MediaImageFieldOption::make()->label(__('Image 6')))
+            ->add(
+                'information_items',
+                ShortcodeTabsField::class,
+                ShortcodeTabsFieldOption::make()
+                    ->label(__('Information'))
+                    ->fields([
+                        'name' => [
+                            'type' => 'text',
+                            'title' => __('Name'),
+                            'required' => true,
+                        ],
+                        'text' => [
+                            'type' => 'textarea',
+                            'title' => __('Text'),
+                            'required' => false,
+                        ],
+                    ])
+                    ->attrs($attributes)
+            );
+    });
+
+    Shortcode::register(
+        'mosaic-collage',
+        __('Mosaic Collage'),
+        __('A mosaic layout with images and content on both sides'),
+        function (ShortcodeCompiler $shortcode) {
+            $items = Shortcode::fields()->getTabsData(['image', 'name', 'text'], $shortcode);
+
+            return Theme::partial('shortcodes.mosaic-collage.index', compact('shortcode', 'items'));
+        }
+    );
+
+    Shortcode::setAdminConfig('mosaic-collage', function (array $attributes) {
+        return ShortcodeForm::createFromArray($attributes)
+            ->withLazyLoading()
+            ->add(
+                'name',
+                TextField::class,
+                TextFieldOption::make()
+                    ->label(__('Name'))
+                    ->placeholder(__('Enter the section name'))
+            )
+            ->add(
+                'description',
+                CkEditorField::class,
+                EditorFieldOption::make()
+                    ->label(__('Text'))
+                    ->placeholder(__('Enter the information displayed below the name'))
+            )
+            ->add(
+                'background_color',
+                ColorField::class,
+                ColorFieldOption::make()
+                    ->label(__('Background color'))
+                    ->defaultValue('#fbf8ed')
+            )
+            ->add(
+                'items',
+                ShortcodeTabsField::class,
+                ShortcodeTabsFieldOption::make()
+                    ->label(__('Mosaic items'))
+                    ->fields([
+                        'image' => [
+                            'type' => 'image',
+                            'title' => __('Image'),
+                            'required' => true,
+                        ],
+                        'name' => [
+                            'type' => 'text',
+                            'title' => __('Name'),
+                            'required' => true,
+                        ],
+                        'text' => [
+                            'type' => 'textarea',
+                            'title' => __('Text'),
+                            'required' => false,
+                        ],
+                    ])
+                    ->attrs($attributes)
+            );
+    });
+
+    Shortcode::register(
         'image-slider',
         __('Image Slider'),
         __('Dynamic carousel for featured content with customizable links.'),
