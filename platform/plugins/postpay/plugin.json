@@ -1,0 +1,12 @@
+{
+    "id": "nawrasbukhari/postpay",
+    "name": "Postpay Payment Gateway",
+    "namespace": "NawrasBukhari\\Postpay\\",
+    "provider": "NawrasBukhari\\Postpay\\Providers\\PostpayServiceProvider",
+    "author": "Nawras Bukhari",
+    "url": "https://github.com/NawrasBukhari/postpay-botble",
+    "version": "1.0.6",
+    "description": "Postpay payment gateway integration",
+    "minimum_core_version": "7.1.0",
+    "require": ["botble/payment"]
+}
