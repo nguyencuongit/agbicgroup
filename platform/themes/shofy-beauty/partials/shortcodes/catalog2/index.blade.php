@@ -477,7 +477,9 @@
         if (!section || !('IntersectionObserver' in window)) return;
         section.classList.add('catalog-motion');
         const observer = new IntersectionObserver(([entry]) => {
-            section.classList.toggle('catalog-is-visible', entry.isIntersecting);
+            if (!entry.isIntersecting) return;
+            section.classList.add('catalog-is-visible');
+            observer.disconnect();
         }, { threshold: 0.1, rootMargin: '-5% 0px -5% 0px' });
         requestAnimationFrame(() => {
             requestAnimationFrame(() => observer.observe(section));
