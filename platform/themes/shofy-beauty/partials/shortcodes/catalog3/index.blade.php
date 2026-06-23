@@ -2,6 +2,23 @@
     $sectionId = 'catalog3-' . uniqid();
     $backgroundColor = $shortcode->background_color ?: '#eef2ea';
     $accentColor = $shortcode->accent_color ?: '#1f5a45';
+    $videoSource = $shortcode->video_file ?: $shortcode->video_url;
+    $videoUrl = $videoSource ? RvMedia::url($videoSource) : null;
+    $videoProvider = null;
+    $videoEmbedUrl = null;
+
+    if ($videoUrl && \Botble\Theme\Supports\Youtube::isYoutubeURL($videoUrl)) {
+        $videoProvider = 'youtube';
+        $videoEmbedUrl = \Botble\Theme\Supports\Youtube::getYoutubeVideoEmbedURL($videoUrl)
+            . '?autoplay=1&mute=1&loop=1&playlist='
+            . \Botble\Theme\Supports\Youtube::getYoutubeVideoID($videoUrl)
+            . '&playsinline=1&rel=0';
+    } elseif ($videoUrl && preg_match('~^https?://(?:www\.)?vimeo\.com/(?:video/)?(\d+)~i', $videoUrl, $matches)) {
+        $videoProvider = 'vimeo';
+        $videoEmbedUrl = 'https://player.vimeo.com/video/' . $matches[1] . '?autoplay=1&muted=1&loop=1&background=1';
+    } elseif ($videoUrl) {
+        $videoProvider = 'file';
+    }
 @endphp
 
 <section id="{{ $sectionId }}" class="catalog-bento">
@@ -22,9 +39,34 @@
         @endif
 
         <div class="catalog-bento__grid">
-            @if ($shortcode->image_1)
-                <figure class="catalog-bento__tile catalog-bento__image catalog-bento__image--large">
-                    {!! RvMedia::image($shortcode->image_1, $shortcode->title ?: $shortcode->section_title) !!}
+            @if ($videoUrl || $shortcode->image_1)
+                <figure class="catalog-bento__tile catalog-bento__image catalog-bento__image--large{{ $videoUrl ? ' catalog-bento__video' : '' }}">
+                    @if ($videoProvider === 'file')
+                        <video
+                            autoplay
+                            muted
+                            loop
+                            playsinline
+                            controls
+                            preload="metadata"
+                            @if ($shortcode->image_1) poster="{{ RvMedia::getImageUrl($shortcode->image_1) }}" @endif
+                            aria-label="{{ $shortcode->title ?: $shortcode->section_title ?: __('Catalog video') }}"
+                        >
+                            <source src="{{ $videoUrl }}">
+                            @if ($shortcode->image_1)
+                                {!! RvMedia::image($shortcode->image_1, $shortcode->title ?: $shortcode->section_title) !!}
+                            @endif
+                        </video>
+                    @elseif ($videoEmbedUrl)
+                        <iframe
+                            src="{{ $videoEmbedUrl }}"
+                            title="{{ $shortcode->title ?: $shortcode->section_title ?: __('Catalog video') }}"
+                            allow="autoplay; encrypted-media; picture-in-picture"
+                            allowfullscreen
+                        ></iframe>
+                    @else
+                        {!! RvMedia::image($shortcode->image_1, $shortcode->title ?: $shortcode->section_title) !!}
+                    @endif
                 </figure>
             @endif
 
@@ -60,37 +102,37 @@
             <div class="catalog-bento__services">
                 @foreach ($items as $item)
                     <article class="catalog-bento__service">
-                        <div class="catalog-bento__service-top">
-                            @if (! empty($item['image']))
-                                <a class="catalog-bento__service-image" href="{{ ($item['url'] ?? null) ?: '#' }}">
-                                    {!! RvMedia::image($item['image'], $item['title'] ?? '') !!}
-                                </a>
-                            @else
-                                <span class="catalog-bento__service-number">
-                                    {{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}
-                                </span>
+                        @if (! empty($item['image']))
+                            <a class="catalog-bento__service-image" href="{{ ($item['url'] ?? null) ?: '#' }}">
+                                {!! RvMedia::image($item['image'], $item['title'] ?? '') !!}
+                            </a>
+                        @else
+                            <span class="catalog-bento__service-number">
+                                {{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}
+                            </span>
+                        @endif
+
+                        <div class="catalog-bento__service-content">
+                            @if (! empty($item['title']))
+                                <h3>
+                                    <a href="{{ ($item['url'] ?? null) ?: '#' }}">
+                                        {!! BaseHelper::clean($item['title']) !!}
+                                    </a>
+                                </h3>
                             @endif
 
-                            <span class="catalog-bento__service-arrow" aria-hidden="true">&#8599;</span>
+                            @if (! empty($item['description']))
+                                <p>{!! BaseHelper::clean($item['description']) !!}</p>
+                            @endif
+
+                            @if (! empty($item['button_label']))
+                                <a class="catalog-bento__service-link" href="{{ ($item['url'] ?? null) ?: '#' }}">
+                                    {!! BaseHelper::clean($item['button_label']) !!}
+                                </a>
+                            @endif
                         </div>
 
-                        @if (! empty($item['title']))
-                            <h3>
-                                <a href="{{ ($item['url'] ?? null) ?: '#' }}">
-                                    {!! BaseHelper::clean($item['title']) !!}
-                                </a>
-                            </h3>
-                        @endif
-
-                        @if (! empty($item['description']))
-                            <p>{!! BaseHelper::clean($item['description']) !!}</p>
-                        @endif
-
-                        @if (! empty($item['button_label']))
-                            <a class="catalog-bento__service-link" href="{{ ($item['url'] ?? null) ?: '#' }}">
-                                {!! BaseHelper::clean($item['button_label']) !!}
-                            </a>
-                        @endif
+                        <span class="catalog-bento__service-arrow" aria-hidden="true">&#8599;</span>
                     </article>
                 @endforeach
             </div>
@@ -190,6 +232,15 @@
         transition: transform .55s ease;
     }
 
+    #{{ $sectionId }} .catalog-bento__video video,
+    #{{ $sectionId }} .catalog-bento__video iframe {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        object-fit: cover;
+    }
+
     #{{ $sectionId }} .catalog-bento__image:hover img {
         transform: none;
     }
@@ -260,7 +311,13 @@
     }
 
     #{{ $sectionId }} .catalog-bento__service {
-        padding: 24px;
+        position: relative;
+        display: grid;
+        grid-template-columns: 120px minmax(0, 1fr);
+        gap: clamp(18px, 2vw, 28px);
+        align-items: center;
+        min-height: 180px;
+        padding: 20px;
         border: 1px solid rgba(31, 90, 69, .09);
         border-radius: 22px;
         background: rgba(255, 255, 255, .78);
@@ -272,41 +329,48 @@
         transform: translateY(-5px);
     }
 
-    #{{ $sectionId }} .catalog-bento__service-top {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        margin-bottom: 18px;
-    }
-
     #{{ $sectionId }} .catalog-bento__service-image {
         display: block;
         overflow: hidden;
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        border-radius: 16px;
     }
 
     #{{ $sectionId }} .catalog-bento__service-image img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transition: transform .45s ease;
+    }
+
+    #{{ $sectionId }} .catalog-bento__service:hover .catalog-bento__service-image img {
+        transform: scale(1.04);
+    }
+
+    #{{ $sectionId }} .catalog-bento__service-content {
+        min-width: 0;
+        padding-right: 20px;
     }
 
     #{{ $sectionId }} .catalog-bento__service-number {
+        align-self: flex-start;
         color: var(--catalog-bento-accent);
         font-size: 13px;
         font-weight: 800;
     }
 
     #{{ $sectionId }} .catalog-bento__service-arrow {
+        position: absolute;
+        top: 20px;
+        right: 20px;
         color: rgba(31, 90, 69, .45);
         font-size: 20px;
     }
 
     #{{ $sectionId }} .catalog-bento__service h3 {
         margin: 0 0 8px;
-        font-size: 18px;
+        font-size: clamp(18px, 1.35vw, 22px);
         line-height: 1.35;
     }
 
@@ -378,6 +442,33 @@
 
         #{{ $sectionId }} .catalog-bento__services {
             grid-template-columns: 1fr;
+        }
+
+        #{{ $sectionId }} .catalog-bento__service {
+            grid-template-columns: 110px minmax(0, 1fr);
+        }
+
+        #{{ $sectionId }} .catalog-bento__service-image {
+            width: 110px;
+            height: 110px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        #{{ $sectionId }} .catalog-bento__service {
+            grid-template-columns: 90px minmax(0, 1fr);
+            gap: 15px;
+            min-height: 140px;
+            padding: 16px;
+        }
+
+        #{{ $sectionId }} .catalog-bento__service-image {
+            width: 90px;
+            height: 90px;
+        }
+
+        #{{ $sectionId }} .catalog-bento__service-content {
+            padding-right: 0;
         }
     }
 

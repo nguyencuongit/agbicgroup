@@ -1,10 +1,12 @@
 <?php
 
 use Botble\Base\Forms\FieldOptions\ColorFieldOption;
+use Botble\Base\Forms\FieldOptions\MediaFileFieldOption;
 use Botble\Base\Forms\FieldOptions\MediaImageFieldOption;
 use Botble\Base\Forms\FieldOptions\TextareaFieldOption;
 use Botble\Base\Forms\FieldOptions\TextFieldOption;
 use Botble\Base\Forms\Fields\ColorField;
+use Botble\Base\Forms\Fields\MediaFileField;
 use Botble\Base\Forms\Fields\MediaImageField;
 use Botble\Base\Forms\Fields\TextareaField;
 use Botble\Base\Forms\Fields\TextField;
@@ -178,12 +180,24 @@ app()->booted(function (): void {
             ->add(
                 'image_1',
                 MediaImageField::class,
-                MediaImageFieldOption::make()->label(__('Large image'))
+                MediaImageFieldOption::make()->label(__('Large image / video poster'))
             )
             ->add(
                 'image_2',
                 MediaImageField::class,
                 MediaImageFieldOption::make()->label(__('Small image'))
+            )
+            ->add(
+                'video_file',
+                MediaFileField::class,
+                MediaFileFieldOption::make()
+                    ->label(__('Video file (MP4/WebM)'))
+            )
+            ->add(
+                'video_url',
+                TextField::class,
+                TextFieldOption::make()
+                    ->label(__('YouTube, Vimeo or video URL'))
             )
             ->add(
                 'title',
