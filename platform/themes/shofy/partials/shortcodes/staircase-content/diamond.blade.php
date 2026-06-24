@@ -47,6 +47,11 @@
         overflow: hidden;
         background: var(--story-bg, #fbf8ed);
         color: #122017;
+        font-family: "Noto Serif", "Times New Roman", serif;
+    }
+
+    .ag-diamond-story * {
+        font-family: "Noto Serif", "Times New Roman", serif !important;
     }
 
     .ag-diamond-story__stage {

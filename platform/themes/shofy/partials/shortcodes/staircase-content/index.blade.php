@@ -52,6 +52,11 @@
         padding: 80px 0 100px;
         background: var(--ag-staircase-background, #fbf8ed);
         color: #172217;
+        font-family: "Noto Serif", "Times New Roman", serif;
+    }
+
+    .ag-staircase-content * {
+        font-family: "Noto Serif", "Times New Roman", serif !important;
     }
 
     .ag-staircase-content__title {

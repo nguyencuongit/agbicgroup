@@ -121,11 +121,11 @@
         padding: 86px 0;
         background: var(--catalog-zigzag-bg);
         color: #1b2923;
-        font-family: Georgia, 'Times New Roman', serif;
+        font-family: "Noto Serif", "Times New Roman", serif;
     }
 
     #{{ $sectionId }} * {
-        font-family: Georgia, 'Times New Roman', serif;
+        font-family: "Noto Serif", "Times New Roman", serif !important;
     }
 
     #{{ $sectionId }} .catalog-zigzag__inner {
