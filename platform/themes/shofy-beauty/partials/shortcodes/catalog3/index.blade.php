@@ -147,11 +147,11 @@
         padding: 86px 0;
         background: var(--catalog-bento-bg);
         color: #192620;
-        font-family: Georgia, 'Times New Roman', serif;
+        font-family: "Noto Serif", "Times New Roman", serif;
     }
 
     #{{ $sectionId }} * {
-        font-family: Georgia, 'Times New Roman', serif;
+        font-family: "Noto Serif", "Times New Roman", serif !important;
     }
 
     #{{ $sectionId }} .catalog-bento__header {

@@ -93,11 +93,11 @@
         background: {{ $shortcode->background_color ?: '#faf7f2' }};
         padding: 72px 0 84px;
         color: var(--catalog-text);
-        font-family: Georgia, 'Times New Roman', serif;
+        font-family: "Noto Serif", "Times New Roman", serif;
     }
 
     #{{ $sectionId }} * {
-        font-family: Georgia, 'Times New Roman', serif;
+        font-family: "Noto Serif", "Times New Roman", serif !important;
     }
 
     #{{ $sectionId }} .catalog-showcase__header {

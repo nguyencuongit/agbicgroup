@@ -60,6 +60,11 @@
         padding: 80px 0 90px;
         background: var(--ag-responsive-contact-background, #fbf8ed);
         color: #172217;
+        font-family: "Noto Serif", "Times New Roman", serif;
+    }
+
+    .ag-responsive-contact * {
+        font-family: "Noto Serif", "Times New Roman", serif !important;
     }
 
     .ag-responsive-contact__title {

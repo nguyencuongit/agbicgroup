@@ -51,6 +51,11 @@
         padding: 80px 0 100px;
         background: var(--ag-mosaic-background, #fbf8ed);
         color: #172217;
+        font-family: "Noto Serif", "Times New Roman", serif;
+    }
+
+    .ag-mosaic-collage * {
+        font-family: "Noto Serif", "Times New Roman", serif !important;
     }
 
     .ag-mosaic-collage__title {

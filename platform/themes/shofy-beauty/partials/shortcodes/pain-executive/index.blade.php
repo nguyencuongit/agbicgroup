@@ -73,6 +73,11 @@
         padding: 88px 0 96px;
         background: {{ $backgroundColor }};
         color: #111827;
+        font-family: "Noto Serif", "Times New Roman", serif;
+    }
+
+    #{{ $sectionId }} * {
+        font-family: "Noto Serif", "Times New Roman", serif !important;
     }
 
     #{{ $sectionId }} .pain-executive__header {
